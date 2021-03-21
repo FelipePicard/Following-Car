@@ -108,8 +108,8 @@ def odom():
     print "odom-X:", marlin.opx
     print "odom-Y:", marlin.opy
     print "odom-Z:", marlin.opz
-    print "odomAng-X:", marlin.oox
-    print "odomAng-Y:", marlin.ooy
+    #print "odomAng-X:", marlin.oox
+    #print "odomAng-Y:", marlin.ooy
     print "odomAng-Z:", marlin.ooz
     print "#############################"
     print
@@ -138,13 +138,35 @@ def search():
     marlin.vy = 4
 
     # brick wall avoiding algorithm
-    if -4.8 < marlin.opx < 4.8 and -3.2 < marlin.opy < 3.2:  # if we enter the region near the brick wall
-        # get the speed, decompose it and make it go "upwards", not hitting the wall
-        prevvy = marlin.vy
-        marlin.vy = 0
-        marlin.vx = 0
-        marlin.vy = prevvy*math.sin(180*marlin.ooz/math.pi)
-        marlin.vx = -1*prevvy*math.cos(180*marlin.ooz/math.pi)
+    if -3.5 < marlin.opx < 3.5 and 2 < marlin.opy < 3.2:  # if we enter the region near the brick wall
+        if(-math.pi < marlin.ooz < -math.pi/2):
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vy = (prevvy*math.sin((math.pi/2)+(math.pi-marlin.ooz)))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)+(math.pi-marlin.ooz))-1))
+            marlin.vx = 0
+            marlin.vx = -1*marlin.vy*math.cos((math.pi) + marlin.ooz)/math.cos((math.pi/2)+(math.pi-marlin.ooz))
+
+        if(math.pi/2 < marlin.ooz < math.pi):
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vy = (prevvy*math.sin((math.pi/2)-marlin.ooz))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)-marlin.ooz)-1))
+            marlin.vx = 0
+            marlin.vx = -1*marlin.vy*math.cos(marlin.ooz)/math.cos((math.pi/2)-marlin.ooz)
+    
+    if -3.5 < marlin.opx < 3.5 and -3.2 < marlin.opy < -2:  # if we enter the region near the brick wall
+        if(-math.pi/2 < marlin.ooz < 0):
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vy = (prevvy*math.sin((math.pi/2)-marlin.ooz))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)-marlin.ooz)-1))
+            marlin.vx = 0
+            marlin.vx = -1*marlin.vy*math.cos(marlin.ooz)/math.cos((math.pi/2)-marlin.ooz)
+
+        if(0 < marlin.ooz < math.pi/2):
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vy = (prevvy*math.sin((math.pi/2)+(math.pi-marlin.ooz)))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)+(math.pi-marlin.ooz))-1))
+            marlin.vx = 0
+            marlin.vx = -1*marlin.vy*math.cos((math.pi) + marlin.ooz)/math.cos((math.pi/2)+(math.pi-marlin.ooz))
 
     # move around the perimeter of the map
     if marlin.opx > -10 and marlin.opy > 10:  # rect region between B and A
@@ -200,12 +222,30 @@ def follow():
 
     # brick wall avoiding algorithm
     if -4.8 < marlin.opx < 4.8 and -3.2 < marlin.opy < 3.2:  # if we enter the region near the brick wall
-        # get the speed, decompose it and make it go "upwards", not hitting the wall
-        prevvy = marlin.vy
-        marlin.vy = 0
-        marlin.vx = 0
-        marlin.vy = prevvy*math.sin(180*marlin.ooz/math.pi)
-        marlin.vx = -1*prevvy*math.cos(180*marlin.ooz/math.pi)
+        if(0 < marlin.ooz < math.pi/2): # y
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vy = (prevvy*math.sin((math.pi/2)-marlin.ooz))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)-marlin.ooz)-1))
+            marlin.vx = 0
+            marlin.vx = 1*marlin.vy*math.cos(marlin.ooz)/math.cos((math.pi/2)-marlin.ooz)
+        if(math.pi/2 < marlin.ooz < math.pi): # y
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vy = (prevvy*math.sin((math.pi/2)-marlin.ooz))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)-marlin.ooz)-1))
+            marlin.vx = 0
+            marlin.vx = -1*marlin.vy*math.cos(marlin.ooz)/math.cos((math.pi/2)-marlin.ooz)
+        if(-math.pi < marlin.ooz < -math.pi/2): # x
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vx = (prevvy*math.sin((math.pi/2)-marlin.ooz))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)-marlin.ooz)-1))
+            marlin.vy = 0
+            marlin.vy = 1*marlin.vx*math.cos(marlin.ooz)/math.cos((math.pi/2)-marlin.ooz)
+        if(-math.pi/2 < marlin.ooz < 0): # x
+            # get the speed, decompose it and make it go "upwards", not hitting the wall
+            prevvy = marlin.vy
+            marlin.vx = (prevvy*math.sin((math.pi/2)-marlin.ooz))/(0.1 + math.sin(marlin.ooz)*(math.sin((math.pi/2)-marlin.ooz)-1))
+            marlin.vy = 0
+            marlin.vy = -1*marlin.vx*math.cos(marlin.ooz)/math.cos((math.pi/2)-marlin.ooz)
 
     # if the cylinder is centered, we go forward
     if marlin.targetdx < 100 and marlin.targetdx > -100:
@@ -249,7 +289,7 @@ while not rospy.is_shutdown():
         follow()
     move()
     sonar()
-    # odom()
+    odom()
     rate.sleep()
 
 rospy.spin()
